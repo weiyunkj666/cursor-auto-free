@@ -1,9 +1,8 @@
 name: Build Executables
 
 on:
-  push:
-    tags:
-      - 'v*'  # 添加标签触发条件，匹配 v1.0.0 这样的标签
+  schedule:
+    - cron: '0 0 * * *'  # 每天午夜运行
 
 jobs:
   build-windows:
@@ -119,7 +118,6 @@ jobs:
   create-release:
     needs: [build-windows, build-macos-arm64, build-linux, build-macos-intel]
     runs-on: ubuntu-22.04
-    if: startsWith(github.ref, 'refs/tags/')
     
     steps:
       - name: Download all artifacts
