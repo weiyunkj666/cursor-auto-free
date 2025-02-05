@@ -130,7 +130,9 @@ class Config:
             logging.info(f"\033[32mIMAP密码: {'*' * len(self.imap_pass)}\033[0m")
             logging.info(f"\033[32mIMAP收件箱目录: {self.imap_dir}\033[0m")
         if self.temp_mail != "null":
-            logging.info(f"\033[32m临时邮箱: {self.temp_mail}@{self.domain}\033[0m")
+            logging.info(
+                f"\033[32m临时邮箱: {self.temp_mail}{self.temp_mail_ext}\033[0m"
+            )
         logging.info(f"\033[32m域名: {self.domain}\033[0m")
 
 
