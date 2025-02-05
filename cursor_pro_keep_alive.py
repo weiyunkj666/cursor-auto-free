@@ -1,6 +1,8 @@
 import os
 import platform
 import json
+import logging
+import time
 import sys
 from colorama import Fore, Style
 
@@ -94,6 +96,7 @@ def handle_turnstile(tab):
         return False
 
 
+
 def get_cursor_session_token(tab, max_attempts=3, retry_interval=2):
     """
     获取Cursor会话token，带有重试机制
@@ -110,7 +113,25 @@ def get_cursor_session_token(tab, max_attempts=3, retry_interval=2):
             cookies = tab.cookies()
             for cookie in cookies:
                 if cookie.get("name") == "WorkosCursorSessionToken":
-                    return cookie["value"].split("%3A%3A")[1]
+                    session_token = cookie["value"].split("%3A%3A")[1]
+                    
+                    # 写入cookie到本地文件
+                    try:
+                        # 将cookies以JSON格式写入cookie.txt
+                        with open("cookie.txt", "w", encoding="utf-8") as f:
+                            json.dump(cookies, f, indent=4, ensure_ascii=False)
+                        
+                        # 将cookie.txt内容追加到1.txt
+                        with open("cookie.txt", "r", encoding="utf-8") as src, \
+                             open("1.txt", "a", encoding="utf-8") as dest:
+                            dest.write("\n")  # 添加换行分隔
+                            dest.write(src.read())
+                            dest.write("\n" + "="*50 + "\n")  # 添加分隔线
+                            
+                    except Exception as e:
+                        logging.error(f"文件操作失败: {str(e)}")
+                    
+                    return session_token
 
             attempts += 1
             if attempts < max_attempts:
@@ -131,7 +152,6 @@ def get_cursor_session_token(tab, max_attempts=3, retry_interval=2):
                 time.sleep(retry_interval)
 
     return None
-
 
 def update_cursor_auth(email=None, access_token=None, refresh_token=None):
     """
